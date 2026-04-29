@@ -1,4 +1,4 @@
-import { cart } from "../data/cart.js";
+import { cart, add_to_cart } from "../data/cart.js";
 import { products } from "../data/products.js";
 
 let html = "";
@@ -23,7 +23,7 @@ products.forEach((product) => {
           </div>
 
           <div class="product-price">
-            ${product.priceCents / 100}
+            ${(product.priceCents / 100).toFixed(2)}
           </div>
 
           <div class="product-quantity-container">
@@ -54,19 +54,23 @@ products.forEach((product) => {
           </button>
         </div>
     `;
+  document.querySelector(".js-products-grid").innerHTML = html;
 });
 
-document.querySelector(".js-products-grid").innerHTML = html;
+function update_cart_quantity() {
+  let cartQuantity = 0;
 
+  cart.forEach((cartItem) => {
+    cartQuantity += cartItem.quantity;
+  });
+
+  document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+}
 document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
   button.addEventListener("click", () => {
     const { productId } = button.dataset;
+    add_to_cart(productId);
 
-    const qty_selector = document.querySelector(
-      `.js-quantity-selector-${productId}`,
-    );
-
-    // Added msg display.
     const added_to_cart_msg = document.querySelector(
       `.js-added-to-cart-${productId}`,
     );
@@ -77,31 +81,6 @@ document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
       added_to_cart_msg.classList.remove("is-added");
     }, 1000);
 
-    const converted_qty_selector = Number(qty_selector.value);
-
-    let matchingItem;
-
-    cart.forEach((cartItem) => {
-      if (productId === cartItem.productId) {
-        matchingItem = cartItem;
-      }
-    });
-
-    if (matchingItem) {
-      matchingItem.quantity += converted_qty_selector;
-    } else {
-      cart.push({
-        productId,
-        quantity: converted_qty_selector,
-      });
-    }
-
-    let cartQuantity = 0;
-
-    cart.forEach((cartItem) => {
-      cartQuantity += cartItem.quantity;
-    });
-
-    document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+    update_cart_quantity();
   });
 });
