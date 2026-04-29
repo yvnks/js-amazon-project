@@ -1,3 +1,5 @@
+import { cart } from "../data/cart.js";
+
 let html = "";
 products.forEach((product) => {
   html += `
@@ -70,15 +72,11 @@ document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
 
     added_to_cart_msg.classList.add("is-added");
 
-    const intervalId  = setTimeout(() => {
+    const intervalId = setTimeout(() => {
       added_to_cart_msg.classList.remove("is-added");
     }, 1000);
 
-  
-   
-
     const converted_qty_selector = Number(qty_selector.value);
-
 
     let matchingItem;
 
