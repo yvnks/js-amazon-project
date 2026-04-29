@@ -40,7 +40,7 @@ products.forEach((product) => {
 
           <div class="product-spacer"></div>
 
-          <div class="added-to-cart">
+          <div class="added-to-cart js-added-to-cart-${product.id}">
             <img src="images/icons/checkmark.png">
             Added
           </div>
@@ -63,8 +63,22 @@ document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
       `.js-quantity-selector-${productId}`,
     );
 
-    const converted_qty_selector = Number(qty_selector.value)
-    console.log(converted_qty_selector);
+    // Added msg display.
+    const added_to_cart_msg = document.querySelector(
+      `.js-added-to-cart-${productId}`,
+    );
+
+    added_to_cart_msg.classList.add("is-added");
+
+    const intervalId  = setTimeout(() => {
+      added_to_cart_msg.classList.remove("is-added");
+    }, 1000);
+
+  
+   
+
+    const converted_qty_selector = Number(qty_selector.value);
+
 
     let matchingItem;
 
@@ -73,7 +87,6 @@ document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
         matchingItem = cartItem;
       }
     });
-    console.log(cart);
 
     if (matchingItem) {
       matchingItem.quantity += converted_qty_selector;
