@@ -1,8 +1,13 @@
-import { cart, removeItemFromCart } from "../data/cart.js";
+import {
+  cart,
+  removeItemFromCart,
+  updateDeliveryOptionId,
+} from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
 import deliveryOptions from "../data/deliveryOptions.js";
 import dayjs from "https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js";
+
 
 let cartSummaryHTML = "";
 cart.forEach((cartItem) => {
@@ -16,12 +21,23 @@ cart.forEach((cartItem) => {
     }
   });
 
-  console.log(matchingProduct);
+  let deliveryOption;
+  const deliveryOptionId = cartItem.deliveryOptionId;
+  deliveryOptions.forEach((option) => {
+    if (option.id === deliveryOptionId) {
+      deliveryOption = option;
+    }
+  });
+
+  const today = dayjs();
+  const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
+  const dateString = deliveryDate.format("dddd, MMMM, D");
+
   cartSummaryHTML += `
     <div class="cart-item-container 
     js-cart-item-container-${matchingProduct.id}">
     <div class="delivery-date">
-        Delivery date: Tuesday, June 21
+        Delivery date: ${dateString}
     </div>
 
     <div class="cart-item-details-grid">
@@ -78,7 +94,10 @@ function deliveryOptionHTML(matchingProduct, cartItem) {
     const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
 
     html += `
-      <div class="delivery-option">
+      <div class="delivery-option js-delivery-option"
+      data-product-id="${matchingProduct.id}"
+      data-delivery-option-id="${deliveryOption.id}"
+      >
         <input
         ${isChecked ? "checked" : ""}
           type="radio"
@@ -95,6 +114,13 @@ function deliveryOptionHTML(matchingProduct, cartItem) {
 
   return html;
 }
+
+document.querySelectorAll(".js-delivery-option").forEach((element) => {
+  element.addEventListener("click", () => {
+    const { productId, deliveryOptionId } = element.dataset
+    updateDeliveryOptionId(productId, deliveryOptionId);
+  });
+});
 
 document.querySelectorAll(".js-delete-quantity-link").forEach((link) => {
   link.addEventListener("click", () => {
